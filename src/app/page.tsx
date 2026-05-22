@@ -15,6 +15,7 @@ type PreviewData = {
   category: string;
   usage_scenarios: string[];
   examples: string[];
+  follow_ups: FollowUp[];
 } | null;
 
 export default function Home() {
@@ -31,6 +32,8 @@ export default function Home() {
   const [contextInput, setContextInput] = useState("");
   const [preview, setPreview] = useState<PreviewData>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [previewQuestion, setPreviewQuestion] = useState("");
+  const [isAskingPreview, setIsAskingPreview] = useState(false);
 
   const categories = [
     "すべて",
@@ -96,6 +99,7 @@ export default function Home() {
         category: data.category,
         usage_scenarios: data.usage_scenarios || [],
         examples: data.examples || [],
+        follow_ups: [],
       });
       setNewTerm("");
       setClarification(null);
@@ -122,7 +126,7 @@ export default function Home() {
           category: preview.category,
           usage_scenarios: preview.usage_scenarios,
           examples: preview.examples,
-          follow_ups: [],
+          follow_ups: preview.follow_ups,
         })
         .select()
         .single();
@@ -134,6 +138,7 @@ export default function Home() {
       }
 
       setPreview(null);
+      setPreviewQuestion("");
       setExpandedTerm(inserted.id);
       fetchTerms();
     } catch (error) {
@@ -141,6 +146,47 @@ export default function Home() {
       alert("エラーが発生しました");
     } finally {
       setIsSaving(false);
+    }
+  }
+
+  async function askPreviewQuestion() {
+    if (!preview || !previewQuestion.trim()) return;
+
+    setIsAskingPreview(true);
+
+    try {
+      const response = await fetch("/api/followup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          term: preview.term,
+          definition: preview.definition,
+          question: previewQuestion,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error || "エラーが発生しました");
+        return;
+      }
+
+      const newFollowUp: FollowUp = {
+        question: previewQuestion,
+        answer: data.answer,
+      };
+
+      setPreview({
+        ...preview,
+        follow_ups: [...preview.follow_ups, newFollowUp],
+      });
+      setPreviewQuestion("");
+    } catch (error) {
+      console.error("Error:", error);
+      alert("エラーが発生しました");
+    } finally {
+      setIsAskingPreview(false);
     }
   }
 
@@ -400,7 +446,47 @@ export default function Home() {
               </div>
             )}
 
-            <div className="flex gap-3 mt-6">
+            {preview.follow_ups && preview.follow_ups.length > 0 && (
+              <div className="mb-4">
+                <h3 className="text-sm font-medium text-blue-400 mb-2">質問と回答</h3>
+                <div className="space-y-3">
+                  {preview.follow_ups.map((fu, index) => (
+                    <div key={index} className="bg-slate-700/30 p-4 rounded-lg">
+                      <p className="text-blue-300 text-sm mb-2">Q: {fu.question}</p>
+                      <p className="text-slate-200 text-sm">A: {fu.answer}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mb-6">
+              <h3 className="text-sm font-medium text-slate-400 mb-2">
+                質問・確認する（保存前に対話できます）
+              </h3>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={previewQuestion}
+                  onChange={(e) => setPreviewQuestion(e.target.value)}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && !isAskingPreview && askPreviewQuestion()
+                  }
+                  placeholder="例: これって〇〇のこと？、△△と何が違う？"
+                  className="flex-1 px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  disabled={isAskingPreview}
+                />
+                <button
+                  onClick={askPreviewQuestion}
+                  disabled={isAskingPreview || !previewQuestion.trim()}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors text-sm"
+                >
+                  {isAskingPreview ? "質問中..." : "質問"}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
               <button
                 onClick={savePreview}
                 disabled={isSaving}
