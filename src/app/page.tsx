@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase, Term, FollowUp } from "@/lib/supabase";
+import { getSupabase, Term, FollowUp } from "@/lib/getSupabase()";
 
 type ClarificationState = {
   term: string;
@@ -48,7 +48,7 @@ export default function Home() {
   }, []);
 
   async function fetchTerms() {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("terms")
       .select("*")
       .order("created_at", { ascending: false });
@@ -114,7 +114,7 @@ export default function Home() {
     setIsSaving(true);
 
     try {
-      const { data: inserted, error } = await supabase
+      const { data: inserted, error } = await getSupabase()
         .from("terms")
         .insert({
           term: preview.term,
@@ -174,7 +174,7 @@ export default function Home() {
 
       const updatedFollowUps = [...(term.follow_ups || []), newFollowUp];
 
-      const { error } = await supabase
+      const { error } = await getSupabase()
         .from("terms")
         .update({ follow_ups: updatedFollowUps })
         .eq("id", term.id);
@@ -198,7 +198,7 @@ export default function Home() {
   async function deleteTerm(id: string) {
     if (!confirm("この用語を削除しますか？")) return;
 
-    const { error } = await supabase.from("terms").delete().eq("id", id);
+    const { error } = await getSupabase().from("terms").delete().eq("id", id);
 
     if (error) {
       console.error("Error deleting term:", error);
