@@ -1,7 +1,9 @@
 import Groq from "groq-sdk";
 import { NextRequest, NextResponse } from "next/server";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+function getGroqClient() {
+  return new Groq({ apiKey: process.env.GROQ_API_KEY || "" });
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,6 +12,8 @@ export async function POST(request: NextRequest) {
     if (!term) {
       return NextResponse.json({ error: "用語を入力してください" }, { status: 400 });
     }
+
+    const groq = getGroqClient();
 
     if (!context) {
       const checkCompletion = await groq.chat.completions.create({
