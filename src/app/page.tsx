@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getSupabase, Term, FollowUp } from "@/lib/getSupabase()";
+import { getSupabase, Term, FollowUp } from "@/lib/supabase";
 
 type ClarificationState = {
   term: string;
