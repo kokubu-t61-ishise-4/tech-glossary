@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tech Glossary
 
-## Getting Started
+## 概要
+データエンジニアリング用語をAIで調べて記録できるWebアプリケーションです。
+新しい用語を入力すると、AIが意味・使用場面・具体例を自動生成し、個人用の用語集として保存できます。
+曖昧な用語については文脈を確認してから検索するため、正確な定義を取得できます。
 
-First, run the development server:
+## 主な機能
+- 用語のAI検索: 入力した用語の意味・カテゴリ・使用場面・具体例をAIが生成
+- 曖昧性の自動検出: 複数の意味がありえる用語は、文脈を確認してから検索
+- プレビュー機能: 保存前にAI生成結果を確認し、追加質問も可能
+- 用語の保存・管理: 検索結果をデータベースに保存し、いつでも参照可能
+- 追加質問機能（フォローアップ）: 保存済みの用語に対して追加で質問し、Q&Aを蓄積
+- カテゴリ別フィルタリング: データベース、ETL、クラウド、プログラミング、データ分析、インフラ等で絞り込み
+- 全文検索: 用語名・説明文で登録済み用語を検索
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 使い方
+1. テキストボックスに調べたい用語を入力し、「検索」ボタンをクリック
+2. 曖昧な用語の場合、候補から選択するか、文脈を入力して再検索
+3. 検索結果のプレビューを確認し、必要に応じて質問を追加
+4. 「この内容で保存する」をクリックして用語集に登録
+5. 登録済みの用語は一覧表示・検索・カテゴリフィルタで参照可能
+6. 用語をクリックすると詳細画面が開き、追加質問が可能
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 技術スタック
+- **フレームワーク**: Next.js 16.2.6 (React 19)
+- **言語**: TypeScript
+- **スタイリング**: Tailwind CSS 4
+- **AI**: Groq API (Llama 3.3 70B)
+- **データベース**: Supabase
+- **ホスティング**: Cloudflare Workers
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## URL
+https://tech-glossary.t61-ishise-4.workers.dev/
