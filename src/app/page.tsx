@@ -142,8 +142,8 @@ export default function Home() {
       setExpandedTerm(inserted.id);
       fetchTerms();
     } catch (error) {
-      console.error("Error:", error);
-      alert("エラーが発生しました");
+      console.error("Save error details:", error);
+      alert(`エラーが発生しました: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setIsSaving(false);
     }

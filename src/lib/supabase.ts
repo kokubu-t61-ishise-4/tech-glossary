@@ -8,6 +8,10 @@ export function getSupabase() {
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !supabaseAnonKey) {
+      console.error("Supabase config missing:", {
+        hasUrl: !!supabaseUrl,
+        hasKey: !!supabaseAnonKey
+      });
       throw new Error("Supabase credentials not configured");
     }
 
